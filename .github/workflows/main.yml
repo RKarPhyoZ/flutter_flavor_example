@@ -107,7 +107,24 @@ jobs:
               with: 
                   artifacts: "build/app/outputs/flutter-apk/app-${{ steps.extract_flavor.outputs.flavor_name }}-release.apk"
                   tag: v1.0.${{ github.run_number }}
-                  token: ${{ secrets.TOKEN }}        
+                  token: ${{ secrets.TOKEN }}      
+    
+                  
+
+    merge_to_staging:
+        name: "Merge to Staging"
+        runs-on: ubuntu-latest
+        if: github.event_name == 'push' && github.ref == 'refs/heads/development' && contains(github.event.head_commit.message, 'merge with staging')
+                
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+                
+            - name: Merge development into staging
+              run: |
+                git checkout staging
+                git merge --no-ff origin/development -m "Merge branch 'development' into staging"
+                git push origin staging
 
 
 
