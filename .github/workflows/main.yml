@@ -118,7 +118,7 @@ jobs:
                 
         #merge to staging from development
         steps:
-            - name: Checkout Repository
+            - name: Checkout Repository To Staging
               uses: actions/checkout@v3
                 
             - name: Merge development into staging
