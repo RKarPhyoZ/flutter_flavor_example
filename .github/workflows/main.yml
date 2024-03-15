@@ -111,28 +111,28 @@ jobs:
     
                   
 
-    merge_to_staging:
-        name: "Merge to Staging"
-        runs-on: ubuntu-latest
-        if: github.event_name == 'push' && github.ref == 'refs/heads/development' && contains(github.event.head_commit.message, 'merge with staging')
+    # merge_to_staging:
+    #     name: "Merge to Staging"
+    #     runs-on: ubuntu-latest
+    #     if: github.event_name == 'push' && github.ref == 'refs/heads/development' && contains(github.event.head_commit.message, 'merge with staging')
                 
-        #merge to staging from development
-        steps:
-            - name: Set Git user identity
-              run: |
-                git config --global user.email "rkarphyo1997dec@gmail.com"
-                git config --global user.name "RKarPhyoZ"
+    #     #merge to staging from development
+    #     steps:
+    #         - name: Set Git user identity
+    #           run: |
+    #             git config --global user.email "rkarphyo1997dec@gmail.com"
+    #             git config --global user.name "RKarPhyoZ"
 
-            - name: Checkout Repository To Staging
-              uses: actions/checkout@v3
+    #         - name: Checkout Repository To Staging
+    #           uses: actions/checkout@v3
                 
-            - name: Merge development into staging
-              run: |
-                git remote update
-                git remote update
-                git checkout staging
-                git merge --allow-unrelated-histories development -m "Merge branch 'development' into staging"
-                git push staging
+    #         - name: Merge development into staging
+    #           run: |
+    #             git remote update
+    #             git remote update
+    #             git checkout staging
+    #             git merge --allow-unrelated-histories development -m "Merge branch 'development' into staging"
+    #             git push staging
 
 
 
