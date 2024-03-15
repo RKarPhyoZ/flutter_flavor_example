@@ -126,7 +126,7 @@ jobs:
                 git remote update
                 git remote update
                 git checkout staging
-                git merge development -m "Merge branch 'development' into staging"
+                git merge --allow-unrelated-histories development -m "Merge branch 'development' into staging"
                 git push staging
 
 
