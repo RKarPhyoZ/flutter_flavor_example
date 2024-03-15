@@ -118,6 +118,11 @@ jobs:
                 
         #merge to staging from development
         steps:
+            - name: Set Git user identity
+              run: |
+                git config --global user.email "rkarphyo1997dec@gmail.com"
+                git config --global user.name "RKarPhyoZ"
+
             - name: Checkout Repository To Staging
               uses: actions/checkout@v3
                 
