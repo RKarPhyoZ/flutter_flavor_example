@@ -1,0 +1,36 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        // {
+        //     "name": "staging",
+        //     "request": "launch",
+        //     "type": "dart",
+        //     "program": "lib/main.dart",
+        //     "args": [
+        //         "--flavor",
+        //         "staging",
+        //     ]
+        // }
+        {
+            "name": "development",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [
+                "--flavor",
+                "development"
+            ]
+        },
+        // {
+        //     "name": "production",
+        //     "request": "launch",
+        //     "type": "dart",
+        //     "program": "lib/main.dart",
+        //     "args": [
+        //         "--flavor",
+        //         "production"
+        //     ]
+        // }
+    ],
+    "compounds": []
+}

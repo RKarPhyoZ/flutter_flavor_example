@@ -1,0 +1,114 @@
+name: "Build & Release"
+
+on:
+  pull_request:
+    branches:
+      - main
+      - staging
+      - development
+  push:
+    branches:
+      - main
+      - staging
+      - development
+
+env:
+    JAVA_VERSION: "17"
+    FLUTTER_VERSION: "3.19.0"
+    FLUTTER_CHANNEL: "stable"
+    # PROPERTIES_PATH: "./android/key.properties"
+
+jobs:
+    build:
+        name: "Build and Release"
+        runs-on: ubuntu-latest
+        if: contains(github.event.head_commit.message, 'release')
+
+
+        steps:
+            # 1 Checkout Repository
+            -   name: "Checkout Repository"
+                uses: actions/checkout@v3
+
+            #2 setup java
+            -   name: Set Up Java
+                uses: actions/setup-java@v3.12.0
+                with:
+                    distribution: 'oracle'
+                    java-version: ${{env.JAVA_VERSION}}
+
+            #3 setup Flutter
+            - name: Set Up Flutter
+              uses: subosito/flutter-action@v2
+              with:
+                flutter-version: ${{env.FLUTTER_VERSION}}
+                channel: ${{env.FLUTTER_CHANNEL}}
+                cache: true
+            
+            # # 6
+            # - name: Download Android keystore
+            #   id: android_keystore
+            #   uses: timheuer/base64-to-file@v1.0.3
+            #   with:
+            #       fileName: upload-keystore.jks
+            #       encodedString: ${{ secrets.KEYSTORE2 }}
+
+            # - name: Configure Key Store
+            #   run: |
+            #     echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > android/key.properties
+            #     echo "storePassword=${{ secrets.KEY_STORE }}" >> android/key.properties
+            #     echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+            #     echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+
+
+            #4 install dependencies
+            - name: Install Dependencies
+              run: flutter pub get
+            
+            #5 extract flavor
+            - name: Extract Flavor Name
+              id: extract_flavor
+              run: |
+                # FLAVOR_NAME=$(echo "${{ github.event.head_commit.message }}" | grep -oP 'release \K\w+')
+                # echo "{name}={$FLAVOR_NAME}" >> $GITHUB_OUTPUT
+                # Split message by spaces and get the second word (assuming flavor name is the second word after 'release')
+                FLAVOR_NAME=$(echo "${{ github.event.head_commit.message }}" | tr ' ' '\n' | awk NR==2)
+                # Check if flavor name is empty (no 'release' found) check commit
+                if [[ -z "$FLAVOR_NAME" ]]; then
+                echo "No 'release' keyword found in commit message"
+                else
+                echo "flavor_name=$FLAVOR_NAME" >> $GITHUB_OUTPUT
+                fi
+            
+            # - name: Print Extracted Flavor
+            #   run: echo "Extracted Flavor: ${{ steps.extract_flavor.outputs.flavor_name }}"
+            - name: Print Extracted Flavor
+              run: echo "Flavor Name ${{ steps.extract_flavor.outputs.flavor_name}}"
+
+
+            #6 build apk with flavor
+            - name: Build APK
+              run: flutter build apk --release --flavor ${{ steps.extract_flavor.outputs.flavor_name }}
+            
+            # #7 build aab
+            # - name: Build appBundle
+            #   run: flutter build appbundle
+
+            #9 get those build to be available to download
+            - name: Upload Artifacts
+              uses: actions/upload-artifact@v2
+              with:
+                    name: Releases
+                    path: build/app/outputs/flutter-apk/app-${{ steps.extract_flavor.outputs.flavor_name }}-release.apk
+            
+            #10 create release with those builds 
+            - name: Create Release
+              uses: ncipollo/release-action@v1
+              with: 
+                  artifacts: "build/app/outputs/flutter-apk/app-${{ steps.extract_flavor.outputs.flavor_name }}-release.apk"
+                  tag: v1.0.${{ github.run_number }}
+                  token: ${{ secrets.TOKEN }}        
+
+
+
+
