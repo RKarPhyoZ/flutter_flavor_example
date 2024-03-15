@@ -126,8 +126,8 @@ jobs:
                 git remote update
                 git remote update
                 git checkout staging
-                git merge --no-ff origin/development -m "Merge branch 'development' into staging"
-                git push origin staging
+                git merge development -m "Merge branch 'development' into staging"
+                git push staging
 
 
 
